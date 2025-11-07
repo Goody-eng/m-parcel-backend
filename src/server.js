@@ -3,6 +3,8 @@ import dotenv from "dotenv";
 import cors from "cors";
 import morgan from "morgan";
 import connectDB from "./config/db.js";
+import authRoutes from "./routes/authRoutes.js";
+
 
 dotenv.config();
 connectDB();
@@ -18,6 +20,8 @@ app.use(morgan("dev"));
 app.get("/", (req, res) => {
   res.send("🚚 M-PARCEL Backend API is running...");
 });
+
+app.use("/api/auth", authRoutes);
 
 // Server Listen
 const PORT = process.env.PORT || 5000;
