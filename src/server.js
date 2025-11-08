@@ -4,6 +4,7 @@ import cors from "cors";
 import morgan from "morgan";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
 
 
 dotenv.config();
@@ -22,6 +23,13 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/orders", orderRoutes);
+
+import { protect } from "./middlewares/authMiddleware.js";
+
+app.get("/api/test/protected", protect, (req, res) => {
+  res.json({ message: "You are authenticated!", user: req.user });
+});
 
 // Server Listen
 const PORT = process.env.PORT || 5000;
