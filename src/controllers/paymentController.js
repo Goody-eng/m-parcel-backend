@@ -1,6 +1,6 @@
 import axios from "axios";
 import dotenv from "dotenv";
-import Order from "../models/orderModel.js";
+import Order from "../models/Order.js";
 
 dotenv.config();
 
