@@ -5,6 +5,8 @@ import morgan from "morgan";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
+import { protect } from "./middlewares/authMiddleware.js";
 
 
 dotenv.config();
@@ -24,8 +26,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/orders", orderRoutes);
-
-import { protect } from "./middlewares/authMiddleware.js";
+app.use("/api/payments", paymentRoutes);
 
 app.get("/api/test/protected", protect, (req, res) => {
   res.json({ message: "You are authenticated!", user: req.user });
