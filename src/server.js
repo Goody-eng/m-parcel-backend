@@ -7,6 +7,7 @@ import authRoutes from "./routes/authRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import { protect } from "./middlewares/authMiddleware.js";
+import adminRoutes from "./routes/adminRoutes.js";  
 
 
 dotenv.config();
@@ -27,6 +28,7 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.get("/api/test/protected", protect, (req, res) => {
   res.json({ message: "You are authenticated!", user: req.user });
