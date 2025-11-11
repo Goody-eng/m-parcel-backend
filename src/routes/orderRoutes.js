@@ -5,7 +5,8 @@ import {
   assignDriver,
   confirmDelivery,
   getAllOrders,
-} from "../controllers/orderController.js";
+  updateDeliveryStatus,
+  } from "../controllers/orderController.js";
 import { protect, adminOnly } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
@@ -20,5 +21,5 @@ router.post("/confirm", protect, confirmDelivery);
 
 // Admin route
 router.get("/all", protect, adminOnly, getAllOrders);
-
+router.patch("/:id/deliver", protect, updateDeliveryStatus);
 export default router;

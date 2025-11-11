@@ -95,3 +95,43 @@ export const getAllOrders = async (req, res) => {
     res.status(500).json({ message: "Cannot retrieve all orders" });
   }
 };
+ // PATCH /api/orders/:id/deliver
+export const updateDeliveryStatus = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { status, deliveryProof } = req.body;
+  
+      // Ensure only drivers can mark delivery
+      if (req.user.role !== "driver") {
+        return res.status(403).json({ message: "Access denied. Drivers only." });
+      }
+  
+      // Validate allowed statuses
+      if (!["Delivered", "Cancelled"].includes(status)) {
+        return res.status(400).json({ message: "Invalid status update." });
+      }
+  
+      const order = await Order.findByIdAndUpdate(
+        id,
+        {
+          status,
+          deliveryProof: deliveryProof || null,
+          deliveredAt: new Date(),
+        },
+        { new: true }
+      );
+  
+      if (!order) {
+        return res.status(404).json({ message: "Order not found." });
+      }
+  
+      res.status(200).json({
+        message: `Order marked as ${status}`,
+        order,
+      });
+    } catch (err) {
+      console.error("❌ Delivery update error:", err.message);
+      res.status(500).json({ message: "Failed to update delivery status." });
+    }
+  };
+  
