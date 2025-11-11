@@ -28,6 +28,7 @@ const orderSchema = new mongoose.Schema(
       required: true,
     },
     deliveryProof: { type: String },
+    deliveredAt: { type: Date }       // when driver marks as delivered
   },
   { timestamps: true }
 );
