@@ -114,4 +114,18 @@ export const mpesaCallback = async (req, res) => {
       res.status(500).json({ message: "Error handling callback" });
     }
   };
+
+  // Get all successful payments
+export const getPaymentHistory = async (req, res) => {
+    try {
+      const orders = await Order.find({ paymentStatus: "Paid" })
+        .populate("createdBy", "name email role")
+        .sort({ updatedAt: -1 });
+  
+      res.status(200).json(orders);
+    } catch (err) {
+      console.error("❌ Error fetching payment history:", err.message);
+      res.status(500).json({ message: "Failed to fetch payment history" });
+    }
+  };
   

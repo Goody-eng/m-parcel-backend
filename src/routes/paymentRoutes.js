@@ -11,3 +11,6 @@ router.post("/stkpush", protect, stkPush);
 router.post("/callback", mpesaCallback);
 
 export default router;
+import { getPaymentHistory } from "../controllers/paymentController.js";
+
+router.get("/history", protect, getPaymentHistory);
