@@ -65,31 +65,53 @@ export const stkPush = async (req, res) => {
 
 // Callback handler
 export const mpesaCallback = async (req, res) => {
-  try {
-    const callbackData = req.body;
-
-    const resultCode =
-      callbackData?.Body?.stkCallback?.ResultCode ?? "NoResultCode";
-
-    if (resultCode === 0) {
-      const metadata =
-        callbackData.Body.stkCallback.CallbackMetadata.Item || [];
-      const mpesaReceipt = metadata.find(
-        (item) => item.Name === "MpesaReceiptNumber"
-      )?.Value;
-      const amount = metadata.find((item) => item.Name === "Amount")?.Value;
-      const phone = metadata.find((item) => item.Name === "PhoneNumber")?.Value;
-      const orderId = callbackData.Body.stkCallback.MerchantRequestID;
-
-      await Order.findOneAndUpdate(
-        { orderId },
-        { paymentStatus: "Paid", status: "Completed", mpesaReceipt, phone }
-      );
+    try {
+      console.log("📩 M-PESA Callback received:");
+      console.log(JSON.stringify(req.body, null, 2));
+  
+      const callbackData = req.body;
+      const resultCode = callbackData?.Body?.stkCallback?.ResultCode ?? null;
+      const merchantRequestID =
+        callbackData?.Body?.stkCallback?.MerchantRequestID ?? null;
+      const checkoutRequestID =
+        callbackData?.Body?.stkCallback?.CheckoutRequestID ?? null;
+  
+      // Log result for debugging
+      console.log(`Result Code: ${resultCode}`);
+      console.log(`MerchantRequestID: ${merchantRequestID}`);
+      console.log(`CheckoutRequestID: ${checkoutRequestID}`);
+  
+      if (resultCode === 0) {
+        const metadata = callbackData.Body.stkCallback.CallbackMetadata.Item || [];
+  
+        const mpesaReceipt = metadata.find(
+          (item) => item.Name === "MpesaReceiptNumber"
+        )?.Value;
+        const amount = metadata.find((item) => item.Name === "Amount")?.Value;
+        const phone = metadata.find((item) => item.Name === "PhoneNumber")?.Value;
+  
+        // Update order using MerchantRequestID or CheckoutRequestID
+        const order = await Order.findOneAndUpdate(
+          { orderId: merchantRequestID }, // adjust if using another key
+          {
+            paymentStatus: "Paid",
+            status: "Delivered",
+            mpesaReceipt,
+            amount,
+            customerPhone: phone,
+          },
+          { new: true }
+        );
+  
+        console.log("✅ Order updated after payment:", order);
+      } else {
+        console.warn("⚠️ Payment not successful, result code:", resultCode);
+      }
+  
+      res.status(200).json({ message: "Callback received successfully" });
+    } catch (err) {
+      console.error("❌ Callback Error:", err.message);
+      res.status(500).json({ message: "Error handling callback" });
     }
-
-    res.status(200).json({ message: "Callback received successfully" });
-  } catch (err) {
-    console.error("Callback Error:", err.message);
-    res.status(500).json({ message: "Error handling callback" });
-  }
-};
+  };
+  
