@@ -1,5 +1,5 @@
-import Order from "../models/order.js";
-import User from "../models/user.js";
+import Order from "../models/Order.js";
+import User from "../models/User.js";
 
 // 🧮 ADMIN — Sees all stats
 export const getAdminDashboard = async (req, res) => {
