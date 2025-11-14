@@ -28,7 +28,8 @@ const orderSchema = new mongoose.Schema(
       required: true,
     },
     deliveryProof: { type: String },
-    deliveredAt: { type: Date }       // when driver marks as delivered
+    deliveredAt: { type: Date },       // when driver marks as delivered
+    notes: { type: String }            // store vehicleType, referenceId, paymentMethod as JSON
   },
   { timestamps: true }
 );

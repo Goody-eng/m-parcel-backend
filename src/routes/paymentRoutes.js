@@ -1,5 +1,5 @@
 import express from "express";
-import { stkPush, mpesaCallback } from "../controllers/paymentController.js";
+import { stkPush, mpesaCallback, getPaymentHistory } from "../controllers/paymentController.js";
 import { protect } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
@@ -10,7 +10,7 @@ router.post("/stkpush", protect, stkPush);
 // M-PESA Callback (Daraja hits this after payment)
 router.post("/callback", mpesaCallback);
 
-export default router;
-import { getPaymentHistory } from "../controllers/paymentController.js";
-
+// Get payment history
 router.get("/history", protect, getPaymentHistory);
+
+export default router;

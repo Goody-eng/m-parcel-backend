@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: m-parcel-backend
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+    # Note: Add other environment variables in Render Dashboard
+    # MONGO_URI, JWT_SECRET, MPESA_* variables should be set in dashboard
+
