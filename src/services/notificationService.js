@@ -10,7 +10,9 @@ export const sendSMS = async (phoneNumber, message) => {
   try {
     // For now, we'll use a simple console log
     // In production, integrate with Africa's Talking or Twilio
-    console.log(`📱 SMS to ${phoneNumber}: ${message}`);
+    console.log(`📱 [SMS] To: ${phoneNumber}`);
+    console.log(`   Message: ${message}`);
+    console.log(`   ✅ SMS sent (simulated)`);
     
     // TODO: Integrate with Africa's Talking API
     // const response = await axios.post(
@@ -40,7 +42,9 @@ export const sendWhatsApp = async (phoneNumber, message) => {
   try {
     // For now, we'll use a simple console log
     // In production, integrate with Meta Cloud API or Twilio
-    console.log(`💬 WhatsApp to ${phoneNumber}: ${message}`);
+    console.log(`💬 [WhatsApp] To: ${phoneNumber}`);
+    console.log(`   Message: ${message}`);
+    console.log(`   ✅ WhatsApp sent (simulated)`);
     
     // TODO: Integrate with Meta Cloud API
     // const response = await axios.post(

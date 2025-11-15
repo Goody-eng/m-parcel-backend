@@ -43,12 +43,26 @@ app.use("/api/users", userRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/panic", panicRoutes);
 
+// Test routes
 app.get("/api/test/protected", protect, (req, res) => {
   res.json({ message: "You are authenticated!", user: req.user });
+});
+
+// Test panic route registration
+app.get("/api/test/panic-route", (req, res) => {
+  res.json({ message: "Panic routes are registered", routes: ["/api/panic/trigger", "/api/panic/history"] });
 });
 
 // Server Listen
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`📋 Registered API routes:`);
+  console.log(`   - /api/auth`);
+  console.log(`   - /api/orders`);
+  console.log(`   - /api/payments`);
+  console.log(`   - /api/admin`);
+  console.log(`   - /api/users`);
+  console.log(`   - /api/dashboard`);
+  console.log(`   - /api/panic (POST /trigger, GET /history)`);
 });

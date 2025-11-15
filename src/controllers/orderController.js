@@ -115,15 +115,31 @@ export const createOrder = async (req, res) => {
       .populate("createdBy", "name phone");
 
     // Send notification to customer about order creation
-    notifyOrderStatusUpdate(populatedOrder, "Pending").catch(err => 
-      console.error("Failed to send order creation notification:", err)
-    );
+    try {
+      console.log(`📧 Sending order creation notification to customer: ${populatedOrder.customerPhone}`);
+      const notifyResult = await notifyOrderStatusUpdate(populatedOrder, "Pending");
+      if (notifyResult.success) {
+        console.log("✅ Order creation notification sent successfully");
+      } else {
+        console.error("❌ Failed to send order creation notification:", notifyResult.error);
+      }
+    } catch (err) {
+      console.error("❌ Error sending order creation notification:", err);
+    }
 
     // If driver is assigned, notify them
     if (populatedOrder.assignedDriver) {
-      notifyDriverAssignment(populatedOrder.assignedDriver, populatedOrder).catch(err =>
-        console.error("Failed to send driver assignment notification:", err)
-      );
+      try {
+        console.log(`📧 Sending driver assignment notification to: ${populatedOrder.assignedDriver.phone}`);
+        const driverNotifyResult = await notifyDriverAssignment(populatedOrder.assignedDriver, populatedOrder);
+        if (driverNotifyResult.success) {
+          console.log("✅ Driver assignment notification sent successfully");
+        } else {
+          console.error("❌ Failed to send driver assignment notification:", driverNotifyResult.error);
+        }
+      } catch (err) {
+        console.error("❌ Error sending driver assignment notification:", err);
+      }
     }
 
     res.status(201).json(populatedOrder);
@@ -380,15 +396,31 @@ export const assignDriver = async (req, res) => {
 
     // Notify driver about assignment
     if (order.assignedDriver) {
-      notifyDriverAssignment(order.assignedDriver, order).catch(err =>
-        console.error("Failed to send driver assignment notification:", err)
-      );
+      try {
+        console.log(`📧 Sending driver assignment notification to: ${order.assignedDriver.phone}`);
+        const driverNotifyResult = await notifyDriverAssignment(order.assignedDriver, order);
+        if (driverNotifyResult.success) {
+          console.log("✅ Driver assignment notification sent successfully");
+        } else {
+          console.error("❌ Failed to send driver assignment notification:", driverNotifyResult.error);
+        }
+      } catch (err) {
+        console.error("❌ Error sending driver assignment notification:", err);
+      }
     }
 
     // Notify customer about status update
-    notifyOrderStatusUpdate(order, "InTransit").catch(err =>
-      console.error("Failed to send status update notification:", err)
-    );
+    try {
+      console.log(`📧 Sending status update notification to customer: ${order.customerPhone}`);
+      const statusNotifyResult = await notifyOrderStatusUpdate(order, "InTransit");
+      if (statusNotifyResult.success) {
+        console.log("✅ Status update notification sent successfully");
+      } else {
+        console.error("❌ Failed to send status update notification:", statusNotifyResult.error);
+      }
+    } catch (err) {
+      console.error("❌ Error sending status update notification:", err);
+    }
 
     res.json(order);
   } catch (error) {
@@ -465,9 +497,17 @@ export const finishRide = async (req, res) => {
       .populate("createdBy", "name phone");
 
     // Notify customer about delivery
-    notifyOrderStatusUpdate(updatedOrder, "Delivered").catch(err =>
-      console.error("Failed to send delivery notification:", err)
-    );
+    try {
+      console.log(`📧 Sending delivery notification to customer: ${updatedOrder.customerPhone}`);
+      const deliveryNotifyResult = await notifyOrderStatusUpdate(updatedOrder, "Delivered");
+      if (deliveryNotifyResult.success) {
+        console.log("✅ Delivery notification sent successfully");
+      } else {
+        console.error("❌ Failed to send delivery notification:", deliveryNotifyResult.error);
+      }
+    } catch (err) {
+      console.error("❌ Error sending delivery notification:", err);
+    }
 
     res.status(200).json({
       message: "Ride completed successfully. You are now available for new assignments.",
