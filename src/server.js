@@ -12,6 +12,7 @@ import { protect } from "./middlewares/authMiddleware.js";
 import adminRoutes from "./routes/adminRoutes.js";  
 import userRoutes from "./routes/userRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
+import panicRoutes from "./routes/panicRoutes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -40,6 +41,7 @@ app.use("/api/payments", paymentRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/panic", panicRoutes);
 
 app.get("/api/test/protected", protect, (req, res) => {
   res.json({ message: "You are authenticated!", user: req.user });

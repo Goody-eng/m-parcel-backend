@@ -1,5 +1,6 @@
 import Order from "../models/Order.js";
 import User from "../models/User.js";
+import { notifyOrderStatusUpdate, notifyDriverAssignment } from "../services/notificationService.js";
 
 // Get all drivers for assignment (prioritize unassigned drivers)
 export const getDrivers = async (req, res) => {
@@ -112,6 +113,18 @@ export const createOrder = async (req, res) => {
     const populatedOrder = await Order.findById(newOrder._id)
       .populate("assignedDriver", "name phone")
       .populate("createdBy", "name phone");
+
+    // Send notification to customer about order creation
+    notifyOrderStatusUpdate(populatedOrder, "Pending").catch(err => 
+      console.error("Failed to send order creation notification:", err)
+    );
+
+    // If driver is assigned, notify them
+    if (populatedOrder.assignedDriver) {
+      notifyDriverAssignment(populatedOrder.assignedDriver, populatedOrder).catch(err =>
+        console.error("Failed to send driver assignment notification:", err)
+      );
+    }
 
     res.status(201).json(populatedOrder);
   } catch (error) {
@@ -357,11 +370,25 @@ export const assignDriver = async (req, res) => {
       { orderId, createdBy: req.user._id },
       { assignedDriver: driverId, status: "InTransit" },
       { new: true }
-    ).populate("assignedDriver", "name phone role");
+    )
+      .populate("assignedDriver", "name phone role")
+      .populate("createdBy", "name phone");
 
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
+
+    // Notify driver about assignment
+    if (order.assignedDriver) {
+      notifyDriverAssignment(order.assignedDriver, order).catch(err =>
+        console.error("Failed to send driver assignment notification:", err)
+      );
+    }
+
+    // Notify customer about status update
+    notifyOrderStatusUpdate(order, "InTransit").catch(err =>
+      console.error("Failed to send status update notification:", err)
+    );
 
     res.json(order);
   } catch (error) {
@@ -436,6 +463,11 @@ export const finishRide = async (req, res) => {
     )
       .populate("assignedDriver", "name phone")
       .populate("createdBy", "name phone");
+
+    // Notify customer about delivery
+    notifyOrderStatusUpdate(updatedOrder, "Delivered").catch(err =>
+      console.error("Failed to send delivery notification:", err)
+    );
 
     res.status(200).json({
       message: "Ride completed successfully. You are now available for new assignments.",
